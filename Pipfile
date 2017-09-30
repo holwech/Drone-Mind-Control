@@ -7,3 +7,5 @@ name = "pypi"
 
 [packages]
 requests = "*"
+pylsl = "*"
+
