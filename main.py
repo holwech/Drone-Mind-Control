@@ -1,8 +1,8 @@
-from lib.stream.stream import Stream
 
+from PyQt5.QtWidgets import QApplication
 
-stream = Stream()
-stream.connect()
-print("Pulling samples...")
-stream.pull_time_series(2000)
-
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = GUI()
+    sys.exit(app.exec_())
+    print("test")
