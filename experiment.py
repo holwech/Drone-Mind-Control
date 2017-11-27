@@ -8,33 +8,93 @@ import numpy as np
 import time
 import threading
 
+
+from pylsl import StreamInlet, resolve_stream
+import time
+from timeit import default_timer as timer
+
 dir = os.path.dirname(__file__)
 
+SAMPLE_RATE = 250
+
 # Number of each experiment type
-LEFT = 0
-RIGHT = 70
 NEUTRAL = 0
+RIGHT = 40
+LEFT = 0
+
+exp_type_to_str = ["neutral", "right", "left"]
 
 # Prints whether to close left or right fist
 # Defined as own function for threading purposes
 def print_action_start(exp_type):
     if exp_type == 1:
-        print("\n      RIGHT ---->\n")
+        print("""
+                         |\\
+                         | \\
+     ====================|  \\
+     |       RIGHT       |   |
+     ====================|  /
+                         | /
+                         |/ \n""")
     elif exp_type == 2:
-        print("\n<---- LEFT\n")
+        print("""
+   /|
+  / |
+ /  |====================
+|   |         LEFT      |
+ \  |====================
+  \ |
+   \| \n""")
 
 
 # Prints when to stop closing fist
 # Defined as own function for threading purposes
 def print_action_stop(exp_type):
     if exp_type != 0:
-        print("STOP")
+        print("""
+ ____________ _____
+/ __|_ __/ _ \|  _ \\
+\__ \ | | (_) | |_) |
+|___/ | |\___/| .__/
+              | |
+              |_| \n""")
 
 def countdown(seconds):
     while seconds > 0:
-        time.sleep(1)
         print(seconds)
+        time.sleep(1)
         seconds -= 1
+
+
+# Samples for a given duration of time in milliseconds
+def pull_time_series(stream, duration, exp_type):
+    elapse_time = timer()
+    print("Printing time_series for ", duration, " milliseconds.")
+
+    num_samples = int(round(250 * (duration / 1000)))
+    time_series = []
+    count = 0
+    first = True
+
+    while count <= num_samples:
+        if ((timer() - elapse_time) >= 3.0) & first:
+            print_action_start(exp_type)
+            first = False
+        count += 1
+        samples, timestamp = stream.pull_sample()
+        time_series.append([timestamp] + samples)
+
+        # Wait for a given period based on the sampling frequency
+        start_time = timer()
+        curr_time = timer()
+        while (curr_time - start_time) < (1 / SAMPLE_RATE):
+            curr_time = timer()
+
+    print_action_stop(exp_type)
+    #print("Timeseries complete")
+    #print("Time elapsed is ", timer() - elapse_time)
+    #print("Number of samples are ", len(time_series))
+    return time_series
 
 
 # NEUTRAL = 0
@@ -44,30 +104,31 @@ def run_experiment(stream, path):
     # Set up a number of each experiment and shuffle the order of them
     exp_size = RIGHT + LEFT + NEUTRAL
     exp_types = np.zeros(exp_size, dtype=int)
-    exp_types[NEUTRAL:(RIGHT * 2)] += 1
-    exp_types[(RIGHT * 2):(RIGHT * 2 + 3 * LEFT)] += 2
+    exp_types[NEUTRAL:(NEUTRAL + RIGHT)] += 1
+    exp_types[(NEUTRAL + RIGHT):(NEUTRAL + RIGHT + LEFT)] += 2
     np.random.shuffle(exp_types)
     print(exp_types)
     i = 0
 
     print("Next experiment starting in...")
-    countdown(3)
+    countdown(5)
 
     for exp_type in exp_types:
-        filename = str(i) + "_right_" + str(exp_type) + ".csv"
+        if (i) % 10 == 0:
+            input("Press any key to continue...")
+            countdown(5)
+        filename = str(i) + exp_type_to_str[exp_type] + ".csv"
         filename = os.path.join(path, filename)
-        start_message = threading.Timer(1.0, print_action_start, [exp_type])
-        stop_message = threading.Timer(4.0, print_action_stop, [exp_type])
 
-        if i % 10 == 0 & i != 0:
-            print("Next experiment starting in...")
-            countdown(10)
+        #start_message = threading.Timer(3.0, print_action_start, [exp_type])
+        #stop_message = threading.Timer(6.0, print_action_stop, [exp_type])
+
         i += 1
-        print("====================" + str(i) + "/" + str(LEFT + RIGHT + NEUTRAL))
+        print("START ====================" + str(i) + "/" + str(LEFT + RIGHT + NEUTRAL))
 
-        start_message.start()
-        stop_message.start()
-        time_series = stream.pull_time_series(6000)
+        #start_message.start()
+        #stop_message.start()
+        time_series = pull_time_series(stream, 6000, exp_type)
         np.savetxt(filename, time_series, delimiter=",")
         print("Starting next measurement...")
         countdown(2)
@@ -89,7 +150,7 @@ if __name__ == '__main__':
     #hashed_name = bcrypt.hashpw(str.encode(name), bcrypt.gensalt())
 
     #path = "/data/" + hashed_name.decode("utf-8")  + "/"
-    path = os.path.join(dir, "Data", name, "single_right")
+    path = os.path.join(dir, "Data", name)
     print(path)
 
     # If not yes, jump to beginning of while loop
