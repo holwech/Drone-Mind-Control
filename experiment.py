@@ -1,6 +1,7 @@
 import pandas as pd
 from lib.stream.stream import Stream
 import os.path
+import os
 import sys
 import bcrypt
 from enum import Enum
@@ -19,7 +20,7 @@ SAMPLE_RATE = 250
 
 # Number of each experiment type
 NEUTRAL = 0
-RIGHT = 40
+RIGHT = 70
 LEFT = 0
 
 exp_type_to_str = ["neutral", "right", "left"]
@@ -61,15 +62,16 @@ def print_action_stop(exp_type):
 
 def countdown(seconds):
     while seconds > 0:
-        print(seconds)
+        print(seconds, end='\r')
         time.sleep(1)
         seconds -= 1
+    os.system('clear')
 
 
 # Samples for a given duration of time in milliseconds
 def pull_time_series(stream, duration, exp_type):
     elapse_time = timer()
-    print("Printing time_series for ", duration, " milliseconds.")
+    #print("Printing time_series for ", duration, " milliseconds.")
 
     num_samples = int(round(250 * (duration / 1000)))
     time_series = []
@@ -90,7 +92,7 @@ def pull_time_series(stream, duration, exp_type):
         while (curr_time - start_time) < (1 / SAMPLE_RATE):
             curr_time = timer()
 
-    print_action_stop(exp_type)
+    #print_action_stop(exp_type)
     #print("Timeseries complete")
     #print("Time elapsed is ", timer() - elapse_time)
     #print("Number of samples are ", len(time_series))
@@ -110,26 +112,26 @@ def run_experiment(stream, path):
     print(exp_types)
     i = 0
 
-    print("Next experiment starting in...")
+    print("Experiment starting in...")
     countdown(5)
 
     for exp_type in exp_types:
-        if (i) % 10 == 0:
-            input("Press any key to continue...")
+        if (i % 10 == 0) & (i != 0):
+            print("Press any key to continue...")
+            input()
             countdown(5)
         filename = str(i) + exp_type_to_str[exp_type] + ".csv"
-        filename = os.path.join(path, filename)
+        filename = os.path.join(path, exp_type_to_str, filename)
 
         #start_message = threading.Timer(3.0, print_action_start, [exp_type])
         #stop_message = threading.Timer(6.0, print_action_stop, [exp_type])
-
-        i += 1
-        print("START ====================" + str(i) + "/" + str(LEFT + RIGHT + NEUTRAL))
-
         #start_message.start()
         #stop_message.start()
+        i += 1
+        print("START ====================" + str(i) + "/" + str(LEFT + RIGHT + NEUTRAL))
         time_series = pull_time_series(stream, 6000, exp_type)
         np.savetxt(filename, time_series, delimiter=",")
+        print("STOP  ====================")
         print("Starting next measurement...")
         countdown(2)
 
