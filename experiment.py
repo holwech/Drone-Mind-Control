@@ -19,9 +19,9 @@ dir = os.path.dirname(__file__)
 SAMPLE_RATE = 250
 
 # Number of each experiment type
-NEUTRAL = 0
-RIGHT = 70
-LEFT = 0
+NEUTRAL = 2
+RIGHT = 2
+LEFT = 2
 
 exp_type_to_str = ["neutral", "right", "left"]
 
@@ -93,9 +93,32 @@ def pull_time_series(stream, duration, exp_type):
             curr_time = timer()
 
     #print_action_stop(exp_type)
-    #print("Timeseries complete")
-    #print("Time elapsed is ", timer() - elapse_time)
-    #print("Number of samples are ", len(time_series))
+    print("Timeseries complete")
+    print("Time elapsed is ", timer() - elapse_time)
+    print("Number of samples are ", len(time_series))
+    return time_series
+
+# Samples for a given duration of time in milliseconds
+# Limited by time and not samples
+def pull_time_series_tm(self, duration, exp_type):
+    elapse_time = timer()
+    print("Printing time_series for ", duration, " milliseconds.")
+
+    time_series = []
+    start_time = timer() * 1000
+    curr_time = timer() * 1000
+    first = True
+    while (curr_time - start_time) < duration:
+        if ((timer() - elapse_time) >= 3.0) & first:
+            print_action_start(exp_type)
+            first = False
+        samples, timestamp = self.pull_sample()
+        time_series.append([timestamp] + samples)
+        curr_time = timer() * 1000
+
+    print("Timeseries complete")
+    print("Time elapsed is ", timer() - elapse_time)
+    print("Number of samples are ", len(time_series))
     return time_series
 
 
@@ -121,7 +144,7 @@ def run_experiment(stream, path):
             input()
             countdown(5)
         filename = str(i) + exp_type_to_str[exp_type] + ".csv"
-        filename = os.path.join(path, exp_type_to_str, filename)
+        filename = os.path.join(path, exp_type_to_str[exp_type], filename)
 
         #start_message = threading.Timer(3.0, print_action_start, [exp_type])
         #stop_message = threading.Timer(6.0, print_action_stop, [exp_type])
@@ -129,7 +152,8 @@ def run_experiment(stream, path):
         #stop_message.start()
         i += 1
         print("START ====================" + str(i) + "/" + str(LEFT + RIGHT + NEUTRAL))
-        time_series = pull_time_series(stream, 6000, exp_type)
+        #time_series = pull_time_series(stream, 6000, exp_type)
+        time_series = pull_time_series_tm(stream, 6000, exp_type)
         np.savetxt(filename, time_series, delimiter=",")
         print("STOP  ====================")
         print("Starting next measurement...")
@@ -152,7 +176,7 @@ if __name__ == '__main__':
     #hashed_name = bcrypt.hashpw(str.encode(name), bcrypt.gensalt())
 
     #path = "/data/" + hashed_name.decode("utf-8")  + "/"
-    path = os.path.join(dir, "Data", name)
+    path = os.path.join(dir, "exp_data", name)
     print(path)
 
     # If not yes, jump to beginning of while loop
@@ -163,6 +187,13 @@ if __name__ == '__main__':
     else:
         try:
             os.makedirs(path)
+        except ValueError:
+            print(ValueError)
+            sys.exit()
+        try:
+            os.makedirs(os.path.join(dir, "exp_data", name, 'neutral'))
+            os.makedirs(os.path.join(dir, "exp_data", name, 'right'))
+            os.makedirs(os.path.join(dir, "exp_data", name, 'left'))
         except ValueError:
             print(ValueError)
             sys.exit()

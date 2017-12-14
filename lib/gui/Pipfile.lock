@@ -1,0 +1,54 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "4c850f6f5130ac4646fe48dcfe6055cdc1ada66660fb3918545780257a2a7335"
+        },
+        "host-environment-markers": {
+            "implementation_name": "cpython",
+            "implementation_version": "3.5.3",
+            "os_name": "posix",
+            "platform_machine": "x86_64",
+            "platform_python_implementation": "CPython",
+            "platform_release": "4.10.0-35-generic",
+            "platform_system": "Linux",
+            "platform_version": "#39-Ubuntu SMP Wed Sep 13 07:46:59 UTC 2017",
+            "python_full_version": "3.5.3",
+            "python_version": "3.5",
+            "sys_platform": "linux"
+        },
+        "pipfile-spec": 5,
+        "requires": {},
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.python.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "pyqt5": {
+            "hashes": [
+                "sha256:39365b95d91b6f920a297f11a134f643f7047b83ce33cfc37f40b9b4ce1e3383",
+                "sha256:18cff7c0d0eb9f7c5783929f21fd7a49904e49827aeec88359cf60cccbd94a86",
+                "sha256:7961e94f0c31b8fdfa157aac08292dc58e44dbce20ce34bc3c0e072abccc11cd",
+                "sha256:5c65de13b616773d4185db66e1132b2cf6ca901d63672e1958c09d056c2af07a"
+            ],
+            "version": "==5.9"
+        },
+        "sip": {
+            "hashes": [
+                "sha256:e66ef947cd8b8c5a13b9ef04981a78a98805e60ed9618e10a3cce0ff696ca0d0",
+                "sha256:41077431be4c4b1bde0db19ca022ffbf4a4ef62593482694be3565eadae33c92",
+                "sha256:5e825a811b035e9aed86a06d330ee8896222981327bc7846135f422db929584c",
+                "sha256:46a1d10e43b54f96a467290ece436a2a62010f6b35e419f24cea470350ed0f14",
+                "sha256:dc7aab5ac82813959bd030f87bea4f3eebef530026472c88670dca5c65ed3d6f",
+                "sha256:22aa287affe996ca6b4aced678614cd355b26e4a83fd2d9950ea354b9d9e4b09",
+                "sha256:9404cbb0d89c2203edea200ce23aeea13fe80ff0c5cf307089f3d7dea0e870c5",
+                "sha256:41aedd7b7a08a7c4ef337691bc22250af2f2364b1882898f3f2b71525849f898"
+            ],
+            "version": "==4.19.3"
+        }
+    },
+    "develop": {}
+}
