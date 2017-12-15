@@ -19,9 +19,9 @@ dir = os.path.dirname(__file__)
 SAMPLE_RATE = 250
 
 # Number of each experiment type
-NEUTRAL = 2
-RIGHT = 2
-LEFT = 2
+NEUTRAL = 50
+RIGHT = 50
+LEFT = 50
 
 exp_type_to_str = ["neutral", "right", "left"]
 
@@ -93,9 +93,9 @@ def pull_time_series(stream, duration, exp_type):
             curr_time = timer()
 
     #print_action_stop(exp_type)
-    print("Timeseries complete")
-    print("Time elapsed is ", timer() - elapse_time)
-    print("Number of samples are ", len(time_series))
+    #print("Timeseries complete")
+    #print("Time elapsed is ", timer() - elapse_time)
+    #print("Number of samples are ", len(time_series))
     return time_series
 
 # Samples for a given duration of time in milliseconds
@@ -116,9 +116,9 @@ def pull_time_series_tm(self, duration, exp_type):
         time_series.append([timestamp] + samples)
         curr_time = timer() * 1000
 
-    print("Timeseries complete")
-    print("Time elapsed is ", timer() - elapse_time)
-    print("Number of samples are ", len(time_series))
+    #print("Timeseries complete")
+    #print("Time elapsed is ", timer() - elapse_time)
+    #print("Number of samples are ", len(time_series))
     return time_series
 
 
@@ -152,8 +152,8 @@ def run_experiment(stream, path):
         #stop_message.start()
         i += 1
         print("START ====================" + str(i) + "/" + str(LEFT + RIGHT + NEUTRAL))
-        #time_series = pull_time_series(stream, 6000, exp_type)
-        time_series = pull_time_series_tm(stream, 6000, exp_type)
+        time_series = pull_time_series(stream, 6000, exp_type)
+        #time_series = pull_time_series_tm(stream, 6000, exp_type)
         np.savetxt(filename, time_series, delimiter=",")
         print("STOP  ====================")
         print("Starting next measurement...")
